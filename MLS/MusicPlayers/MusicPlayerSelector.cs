@@ -42,6 +42,8 @@ namespace MLS
             // TODO Subscribe a method to SyncSongsResult and call GetSyncSongs on the sender
             musicPlayerData.SyncSongsResult += MusicDatabase.MusicBrainz.MusicBrainzSyncronizer.findSongs;
             musicPlayerData.GetSyncSongsAsync(selectedItems);
+            form.HidePlaylists();
+            form.ShowSearchResolve();
             return;
         }
 
@@ -53,6 +55,7 @@ namespace MLS
                 playerData.PlaylistInfoResult += mp_PlaylistResult;
                 playerData.GetPlaylistInfoAsync();
                 form.HideLogin();
+                form.toggleSelectorButton(true);
                 form.ShowPlaylists();
             } 
             else

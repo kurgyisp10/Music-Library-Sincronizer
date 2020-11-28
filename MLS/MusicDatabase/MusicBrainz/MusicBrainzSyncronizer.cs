@@ -22,6 +22,7 @@ namespace MLS.MusicDatabase.MusicBrainz
         public static Dictionary<string, List<string>> results;
         private Uri redirect = new Uri("http://localhost:5000/callback");
         private string accessToken;
+        public static Form1 form;
 
         public async void testMethod()
         {
@@ -113,6 +114,13 @@ namespace MLS.MusicDatabase.MusicBrainz
             {
                 List<string> foundSongs = findMusic(songs[songId]);
                 results.Add(songId, foundSongs);
+            }
+            foreach (var id in results.Keys)
+            {
+                if (results[id].Count >= 2)
+                {
+                    form.UpdateSRListBox(songs[id]);
+                }
             }
         }
         //TODO: Create Collection
