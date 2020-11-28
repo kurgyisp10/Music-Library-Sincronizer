@@ -40,6 +40,7 @@ namespace MLS
         public static void GetSongs(System.Windows.Forms.ListBox.SelectedObjectCollection selectedItems)
         {
             // TODO Subscribe a method to SyncSongsResult and call GetSyncSongs on the sender
+            musicPlayerData.SyncSongsResult += MusicDatabase.MusicBrainz.MusicBrainzSyncronizer.findSongs;
             musicPlayerData.GetSyncSongsAsync(selectedItems);
             return;
         }
