@@ -74,19 +74,26 @@ namespace MLS
         public void HideSearchResolve()
         {
             backToListsBt.Hide();
+            createListBt.Hide();
             songConflictsListBox.Hide();
         }
 
         public void ShowSearchResolve()
         {
-            tipLabel.Text = "Couldn't find exact match for these songs. Double click on a song to resolve the search. Unresolved songs will be ignored.";
+            tipLabel.Text = "Searching database for selected songs";
             backToListsBt.Show();
+            createListBt.Show();
             songConflictsListBox.Show();
         }
 
         public void HideConflict()
         {
             conflictResolverListBox.Hide();
+        }
+
+        public void ShowConflict()
+        {
+            conflictResolverListBox.Show();
         }
 
         public void toggleSelectorButton(bool b)
@@ -115,6 +122,21 @@ namespace MLS
             Update();
         }
 
+        public Progress<int> SetupProgressBar(int max)
+        {
+            progressBar1.Show();
+            progressBar1.Maximum = max;
+            progressBar1.Step = 1;
+            return new Progress<int>(v =>
+            {
+                progressBar1.PerformStep();
+                if (progressBar1.Value == progressBar1.Maximum)
+                {
+                    progressBar1.Hide();
+                }
+            });
+        }
+
         private void syncButton_Click(object sender, EventArgs e)
         {
             if (playlistsListBox.SelectedItems.Count == 0)
@@ -122,7 +144,6 @@ namespace MLS
                 tipLabel.Text = "Select at least one playlist from the list above.";
                 return;
             }
-            //Run database search on these
             MusicPlayerSelector.GetSongs(playlistsListBox.SelectedItems);
         }
 
@@ -135,11 +156,19 @@ namespace MLS
 
         private void songConflictsListBox_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            int index = this.songConflictsListBox.IndexFromPoint(e.Location);
+            int index = songConflictsListBox.IndexFromPoint(e.Location);
             if (index != ListBox.NoMatches)
             {
-                //TODO Show resolve list
+                ResolveConflict((songConflictsListBox.Items[index] as PlaylistInfo).playlistId);
             }
+        }
+
+        private void ResolveConflict(string playlistId)
+        {
+            HideSearchResolve();
+            ShowConflict();
+            conflictResolverListBox.Items.Clear();
+
         }
 
         private void backToListsBt_Click(object sender, EventArgs e)

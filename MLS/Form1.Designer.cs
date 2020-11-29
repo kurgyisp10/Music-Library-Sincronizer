@@ -39,6 +39,7 @@ namespace MLS
             this.songConflictsListBox = new System.Windows.Forms.ListBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.conflictResolverListBox = new System.Windows.Forms.ListBox();
+            this.createListBt = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // musicPlayerListBox
@@ -50,10 +51,9 @@ namespace MLS
             this.musicPlayerListBox.FormattingEnabled = true;
             this.musicPlayerListBox.ItemHeight = 20;
             this.musicPlayerListBox.Location = new System.Drawing.Point(12, 12);
-            this.musicPlayerListBox.MaximumSize = new System.Drawing.Size(240, 320);
             this.musicPlayerListBox.MinimumSize = new System.Drawing.Size(120, 160);
             this.musicPlayerListBox.Name = "musicPlayerListBox";
-            this.musicPlayerListBox.Size = new System.Drawing.Size(240, 320);
+            this.musicPlayerListBox.Size = new System.Drawing.Size(412, 320);
             this.musicPlayerListBox.TabIndex = 0;
             // 
             // selectorButton
@@ -62,7 +62,7 @@ namespace MLS
             this.selectorButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.selectorButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.selectorButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.selectorButton.Location = new System.Drawing.Point(172, 386);
+            this.selectorButton.Location = new System.Drawing.Point(344, 386);
             this.selectorButton.MaximumSize = new System.Drawing.Size(120, 50);
             this.selectorButton.MinimumSize = new System.Drawing.Size(60, 25);
             this.selectorButton.Name = "selectorButton";
@@ -81,11 +81,10 @@ namespace MLS
             this.playlistsListBox.FormattingEnabled = true;
             this.playlistsListBox.ItemHeight = 20;
             this.playlistsListBox.Location = new System.Drawing.Point(12, 12);
-            this.playlistsListBox.MaximumSize = new System.Drawing.Size(240, 320);
             this.playlistsListBox.MinimumSize = new System.Drawing.Size(120, 160);
             this.playlistsListBox.Name = "playlistsListBox";
             this.playlistsListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.playlistsListBox.Size = new System.Drawing.Size(240, 320);
+            this.playlistsListBox.Size = new System.Drawing.Size(412, 320);
             this.playlistsListBox.TabIndex = 2;
             // 
             // syncButton
@@ -94,7 +93,7 @@ namespace MLS
             this.syncButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.syncButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.syncButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.syncButton.Location = new System.Drawing.Point(172, 386);
+            this.syncButton.Location = new System.Drawing.Point(344, 386);
             this.syncButton.MaximumSize = new System.Drawing.Size(120, 50);
             this.syncButton.MinimumSize = new System.Drawing.Size(60, 25);
             this.syncButton.Name = "syncButton";
@@ -142,7 +141,7 @@ namespace MLS
             this.tipLabel.AutoSize = true;
             this.tipLabel.ForeColor = System.Drawing.SystemColors.ControlLight;
             this.tipLabel.Location = new System.Drawing.Point(12, 339);
-            this.tipLabel.MaximumSize = new System.Drawing.Size(240, 0);
+            this.tipLabel.MaximumSize = new System.Drawing.Size(412, 0);
             this.tipLabel.MinimumSize = new System.Drawing.Size(120, 0);
             this.tipLabel.Name = "tipLabel";
             this.tipLabel.Size = new System.Drawing.Size(178, 13);
@@ -158,17 +157,16 @@ namespace MLS
             this.songConflictsListBox.FormattingEnabled = true;
             this.songConflictsListBox.ItemHeight = 20;
             this.songConflictsListBox.Location = new System.Drawing.Point(12, 12);
-            this.songConflictsListBox.MaximumSize = new System.Drawing.Size(240, 320);
             this.songConflictsListBox.MinimumSize = new System.Drawing.Size(120, 160);
             this.songConflictsListBox.Name = "songConflictsListBox";
-            this.songConflictsListBox.Size = new System.Drawing.Size(240, 320);
+            this.songConflictsListBox.Size = new System.Drawing.Size(412, 320);
             this.songConflictsListBox.TabIndex = 7;
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 355);
+            this.progressBar1.Location = new System.Drawing.Point(98, 386);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(240, 23);
+            this.progressBar1.Size = new System.Drawing.Size(240, 25);
             this.progressBar1.TabIndex = 8;
             this.progressBar1.Visible = false;
             // 
@@ -181,28 +179,43 @@ namespace MLS
             this.conflictResolverListBox.FormattingEnabled = true;
             this.conflictResolverListBox.ItemHeight = 20;
             this.conflictResolverListBox.Location = new System.Drawing.Point(12, 12);
-            this.conflictResolverListBox.MaximumSize = new System.Drawing.Size(240, 320);
             this.conflictResolverListBox.MinimumSize = new System.Drawing.Size(120, 160);
             this.conflictResolverListBox.Name = "conflictResolverListBox";
-            this.conflictResolverListBox.Size = new System.Drawing.Size(240, 320);
+            this.conflictResolverListBox.Size = new System.Drawing.Size(412, 320);
             this.conflictResolverListBox.TabIndex = 9;
+            // 
+            // createListBt
+            // 
+            this.createListBt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.createListBt.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.createListBt.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.createListBt.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.createListBt.Location = new System.Drawing.Point(344, 386);
+            this.createListBt.MaximumSize = new System.Drawing.Size(120, 50);
+            this.createListBt.MinimumSize = new System.Drawing.Size(60, 25);
+            this.createListBt.Name = "createListBt";
+            this.createListBt.Size = new System.Drawing.Size(80, 25);
+            this.createListBt.TabIndex = 10;
+            this.createListBt.Text = "Create Lists";
+            this.createListBt.UseVisualStyleBackColor = false;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(18)))), ((int)(((byte)(18)))), ((int)(((byte)(18)))));
-            this.ClientSize = new System.Drawing.Size(260, 423);
-            this.Controls.Add(this.conflictResolverListBox);
+            this.ClientSize = new System.Drawing.Size(436, 423);
+            this.Controls.Add(this.createListBt);
             this.Controls.Add(this.progressBar1);
-            this.Controls.Add(this.songConflictsListBox);
             this.Controls.Add(this.tipLabel);
+            this.Controls.Add(this.backToLoginBt);
+            this.Controls.Add(this.backToListsBt);
+            this.Controls.Add(this.conflictResolverListBox);
+            this.Controls.Add(this.songConflictsListBox);
             this.Controls.Add(this.musicPlayerListBox);
             this.Controls.Add(this.playlistsListBox);
-            this.Controls.Add(this.syncButton);
-            this.Controls.Add(this.backToLoginBt);
             this.Controls.Add(this.selectorButton);
-            this.Controls.Add(this.backToListsBt);
+            this.Controls.Add(this.syncButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form1";
             this.Text = "Form1";
@@ -223,6 +236,7 @@ namespace MLS
         private System.Windows.Forms.ListBox songConflictsListBox;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.ListBox conflictResolverListBox;
+        private System.Windows.Forms.Button createListBt;
     }
 }
 

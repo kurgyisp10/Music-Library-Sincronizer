@@ -30,7 +30,7 @@ namespace MLS
             return songName + " by " + artistName;
         }
     }
-    public struct PlaylistInfo
+    public class PlaylistInfo
     {
         public string playlistId;
         public string playlistName;
