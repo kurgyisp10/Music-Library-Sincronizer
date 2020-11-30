@@ -157,7 +157,10 @@ namespace MLS.MusicDatabase.MusicBrainz
             foreach (string songId in songsToSync.Keys)
             {
                 List<string> foundSongs = await findMusic(songsToSync[songId], progress);
-                results.Add(songId, foundSongs);
+                if (foundSongs.Count > 0)
+                {
+                    results.Add(songId, foundSongs);
+                }
             }
             foreach (var id in results.Keys)
             {
@@ -180,7 +183,7 @@ namespace MLS.MusicDatabase.MusicBrainz
             results[songId].Add(MBID);
         }
     
-        private async Task<Dictionary<Guid, CollectionInfo>> getUserCollections(string user)
+        private static async Task<Dictionary<Guid, CollectionInfo>> getUserCollections(string user)
         {
             Dictionary<Guid, CollectionInfo> userCollections = new Dictionary<Guid, CollectionInfo>();
             int browseLimit = 50;
@@ -216,7 +219,7 @@ namespace MLS.MusicDatabase.MusicBrainz
             return userCollections;
         }
 
-        public async void syncronizeCollections()
+        public static async Task syncronizeCollections()
         {
             Dictionary<Guid, CollectionInfo> collections = await getUserCollections(userName).ConfigureAwait(false);
             //Remove unnecessary songs from collection
@@ -264,6 +267,7 @@ namespace MLS.MusicDatabase.MusicBrainz
                 if (results[songId].Count >= 2)
                 {
                     //ERROR
+                    continue;
                 }
                 SongInfo songInfo = songsToSync[songId];
                 Guid songMBID = new Guid(results[songId][0]);

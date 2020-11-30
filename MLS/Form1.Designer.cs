@@ -43,6 +43,7 @@ namespace MLS
             this.backToSearchConflictsBt = new System.Windows.Forms.Button();
             this.selectMBIDBt = new System.Windows.Forms.Button();
             this.usernameTextBox = new System.Windows.Forms.TextBox();
+            this.exitBt = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // musicPlayerListBox
@@ -246,12 +247,29 @@ namespace MLS
             this.usernameTextBox.Size = new System.Drawing.Size(240, 20);
             this.usernameTextBox.TabIndex = 13;
             // 
+            // exitBt
+            // 
+            this.exitBt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.exitBt.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.exitBt.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.exitBt.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.exitBt.Location = new System.Drawing.Point(344, 386);
+            this.exitBt.MaximumSize = new System.Drawing.Size(120, 50);
+            this.exitBt.MinimumSize = new System.Drawing.Size(60, 25);
+            this.exitBt.Name = "exitBt";
+            this.exitBt.Size = new System.Drawing.Size(80, 25);
+            this.exitBt.TabIndex = 14;
+            this.exitBt.Text = "Exit";
+            this.exitBt.UseVisualStyleBackColor = false;
+            this.exitBt.Click += new System.EventHandler(this.exitBt_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(18)))), ((int)(((byte)(18)))), ((int)(((byte)(18)))));
             this.ClientSize = new System.Drawing.Size(436, 423);
+            this.Controls.Add(this.exitBt);
             this.Controls.Add(this.backToSearchConflictsBt);
             this.Controls.Add(this.createListBt);
             this.Controls.Add(this.tipLabel);
@@ -290,6 +308,7 @@ namespace MLS
         private System.Windows.Forms.Button backToSearchConflictsBt;
         private System.Windows.Forms.Button selectMBIDBt;
         private System.Windows.Forms.TextBox usernameTextBox;
+        private System.Windows.Forms.Button exitBt;
     }
 }
 

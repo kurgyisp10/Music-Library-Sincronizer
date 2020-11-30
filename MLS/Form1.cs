@@ -13,6 +13,7 @@ namespace MLS
             HidePlaylists();
             HideSearchResolve();
             HideConflict();
+            exitBt.Hide();
             MusicPlayerSelector.form = this;
             MusicBrainzSyncronizer.form = this;
             Array values = Enum.GetValues(typeof(MusicPlayer));
@@ -236,13 +237,26 @@ namespace MLS
             }
         }
 
-        private void createListBt_Click(object sender, EventArgs e)
+        private async void createListBt_Click(object sender, EventArgs e)
         {
             if (usernameTextBox.TextLength == 0)
             {
                 tipLabel.Text = "Please write your MusicBrainz Username in the textbox below.";
                 return;
             }
+            MusicBrainzSyncronizer.userName = usernameTextBox.Text;
+            tipLabel.Text = "Updating collections.";
+            createListBt.Enabled = false;
+            backToListsBt.Enabled = false;
+            await MusicBrainzSyncronizer.syncronizeCollections();
+            HideSearchResolve();
+            exitBt.Show();
+            tipLabel.Text = "Collection data has been saved to a JSON file.";
+        }
+
+        private void exitBt_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }
