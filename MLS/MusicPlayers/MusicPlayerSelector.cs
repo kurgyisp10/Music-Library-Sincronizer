@@ -26,6 +26,8 @@ namespace MLS
                     {
                         musicPlayerData = new SpotifyData();
                         musicPlayerData.LoginResult += mp_LoginResult;
+                        musicPlayerData.SyncSongsResult += MusicDatabase.MusicBrainz.MusicBrainzSyncronizer.findSongs;
+                        musicPlayerData.PlaylistInfoResult += mp_PlaylistResult;
                         musicPlayerData.LoginAsync();
                         break;
                     }
@@ -39,8 +41,6 @@ namespace MLS
 
         public static void GetSongs(System.Windows.Forms.ListBox.SelectedObjectCollection selectedItems)
         {
-            // TODO Subscribe a method to SyncSongsResult and call GetSyncSongs on the sender
-            musicPlayerData.SyncSongsResult += MusicDatabase.MusicBrainz.MusicBrainzSyncronizer.findSongs;
             musicPlayerData.GetSyncSongsAsync(selectedItems);
             form.HidePlaylists();
             form.ShowSearchResolve();
@@ -52,7 +52,6 @@ namespace MLS
             if (e)
             {
                 IMusicPlayerData playerData = (sender as IMusicPlayerData);
-                playerData.PlaylistInfoResult += mp_PlaylistResult;
                 playerData.GetPlaylistInfoAsync();
                 form.HideLogin();
                 form.toggleSelectorButton(true);

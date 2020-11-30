@@ -1,12 +1,6 @@
 ﻿using MLS.MusicDatabase.MusicBrainz;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MLS
@@ -73,6 +67,7 @@ namespace MLS
 
         public void HideSearchResolve()
         {
+            usernameTextBox.Hide();
             backToListsBt.Hide();
             createListBt.Hide();
             songConflictsListBox.Hide();
@@ -80,7 +75,8 @@ namespace MLS
 
         public void ShowSearchResolve()
         {
-            tipLabel.Text = "Searching database for selected songs";
+            tipLabel.Text = "Searching database for selected songs.";
+            usernameTextBox.Show();
             backToListsBt.Show();
             createListBt.Show();
             songConflictsListBox.Show();
@@ -130,6 +126,7 @@ namespace MLS
         {
             progressBar1.Show();
             progressBar1.Maximum = max;
+            progressBar1.Value = 0;
             progressBar1.Step = 1;
             return new Progress<int>(v =>
             {
@@ -137,12 +134,16 @@ namespace MLS
                 if (progressBar1.Value == progressBar1.Maximum)
                 {
                     progressBar1.Hide();
+                    backToListsBt.Enabled = true;
+                    createListBt.Enabled = true;
                 }
             });
         }
 
         private void syncButton_Click(object sender, EventArgs e)
         {
+            backToListsBt.Enabled = false;
+            createListBt.Enabled = false;
             if (playlistsListBox.SelectedItems.Count == 0)
             {
                 tipLabel.Text = "Select at least one playlist from the list above.";
@@ -160,6 +161,7 @@ namespace MLS
 
         private void songConflictsListBox_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+            tipLabel.Text = "Search for the recordings with these MBIDs on MusicBrainz to select the desired one.";
             int index = songConflictsListBox.IndexFromPoint(e.Location);
             if (index != ListBox.NoMatches)
             {
@@ -181,6 +183,8 @@ namespace MLS
 
         private void backToListsBt_Click(object sender, EventArgs e)
         {
+            songConflictsListBox.Items.Clear();
+            MusicBrainzSyncronizer.ClearResults();
             HideSearchResolve();
             syncButton.Enabled = true;
             ShowPlaylists();
@@ -190,12 +194,14 @@ namespace MLS
         {
             HideConflict();
             ShowSearchResolve();
+            CheckConflicts();
         }
 
         private void selectMBIDBt_Click(object sender, EventArgs e)
         {
             if (conflictResolverListBox.SelectedItem == null)
             {
+                tipLabel.Text = "Select which version you want to save.";
                 return;
             }
             MusicBrainzSyncronizer.selectMBID((songConflictsListBox.SelectedItem as SongInfo).songId,
@@ -203,11 +209,40 @@ namespace MLS
             RefreshSRListBox();
             HideConflict();
             ShowSearchResolve();
+            CheckConflicts();
         }
 
         private void RefreshSRListBox()
         {
             songConflictsListBox.Items.Remove(songConflictsListBox.SelectedItem);
+        }
+
+        public void CheckConflicts()
+        {
+            if (songConflictsListBox.Items.Count > 1)
+            {
+                tipLabel.Text = "These songs have multiple recordings in the database. Double click on a song to resolve the conflicts." +
+                    " To create collection(s) without these songs write your username in the textbox below.";
+            }
+            else if (songConflictsListBox.Items.Count > 0)
+            {
+                tipLabel.Text = "This song has multiple recordings in the database. Double click on the song to resolve the conflict." +
+                    " To create collection(s) without this song write your username in the textbox below.";
+            }
+            else
+            {
+                tipLabel.Text = "No conflicts found." +
+                    " To create collection(s) write your username in the textbox below.";
+            }
+        }
+
+        private void createListBt_Click(object sender, EventArgs e)
+        {
+            if (usernameTextBox.TextLength == 0)
+            {
+                tipLabel.Text = "Please write your MusicBrainz Username in the textbox below.";
+                return;
+            }
         }
     }
 }

@@ -42,7 +42,7 @@ namespace MLS
             this.createListBt = new System.Windows.Forms.Button();
             this.backToSearchConflictsBt = new System.Windows.Forms.Button();
             this.selectMBIDBt = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.usernameTextBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // musicPlayerListBox
@@ -202,6 +202,7 @@ namespace MLS
             this.createListBt.TabIndex = 10;
             this.createListBt.Text = "Create Lists";
             this.createListBt.UseVisualStyleBackColor = false;
+            this.createListBt.Click += new System.EventHandler(this.createListBt_Click);
             // 
             // backToSearchConflictsBt
             // 
@@ -235,15 +236,15 @@ namespace MLS
             this.selectMBIDBt.UseVisualStyleBackColor = false;
             this.selectMBIDBt.Click += new System.EventHandler(this.selectMBIDBt_Click);
             // 
-            // textBox1
+            // usernameTextBox
             // 
-            this.textBox1.BackColor = System.Drawing.Color.Black;
-            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox1.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.textBox1.Location = new System.Drawing.Point(98, 386);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(240, 20);
-            this.textBox1.TabIndex = 13;
+            this.usernameTextBox.BackColor = System.Drawing.Color.Black;
+            this.usernameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.usernameTextBox.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.usernameTextBox.Location = new System.Drawing.Point(98, 390);
+            this.usernameTextBox.Name = "usernameTextBox";
+            this.usernameTextBox.Size = new System.Drawing.Size(240, 20);
+            this.usernameTextBox.TabIndex = 13;
             // 
             // Form1
             // 
@@ -251,11 +252,8 @@ namespace MLS
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(18)))), ((int)(((byte)(18)))), ((int)(((byte)(18)))));
             this.ClientSize = new System.Drawing.Size(436, 423);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.selectMBIDBt);
             this.Controls.Add(this.backToSearchConflictsBt);
             this.Controls.Add(this.createListBt);
-            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.tipLabel);
             this.Controls.Add(this.songConflictsListBox);
             this.Controls.Add(this.musicPlayerListBox);
@@ -265,6 +263,9 @@ namespace MLS
             this.Controls.Add(this.conflictResolverListBox);
             this.Controls.Add(this.backToLoginBt);
             this.Controls.Add(this.backToListsBt);
+            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.usernameTextBox);
+            this.Controls.Add(this.selectMBIDBt);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form1";
             this.Text = "Form1";
@@ -288,7 +289,7 @@ namespace MLS
         private System.Windows.Forms.Button createListBt;
         private System.Windows.Forms.Button backToSearchConflictsBt;
         private System.Windows.Forms.Button selectMBIDBt;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox usernameTextBox;
     }
 }
 

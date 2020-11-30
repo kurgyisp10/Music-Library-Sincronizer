@@ -118,15 +118,15 @@ namespace MLS.MusicDatabase.MusicBrainz
                     continue;
                 }
                 int browseLimit = 100;
-                var works = await query.BrowseArtistRecordingsAsync(artist.Item.Id, limit: browseLimit).ConfigureAwait(false);
+                var works = await query.FindRecordingsAsync("arid:" + artist.Item.Id.ToString() + " AND \"" + song.songName + "\"", browseLimit);//query.BrowseArtistRecordingsAsync(artist.Item.Id, limit: browseLimit).ConfigureAwait(false);
                 for (int i = 0; i <= works.TotalResults; i += browseLimit)
                 {
                     foreach (var work in works.Results)
                     {
-                        if (work.Title.Equals(song.songName))
+                        if (work.Item.Title.Equals(song.songName))
                         {
-                            foundSongs.Add(work.Id.ToString());
-                            Console.WriteLine("Artist: " + artist.Item.Name + ", Song: " + work.Title + ", MBID: " + work.Id.ToString());
+                            foundSongs.Add(work.Item.Id.ToString());
+                            Console.WriteLine("Artist: " + artist.Item.Name + ", Song: " + work.Item.Title + ", MBID: " + work.Item.Id.ToString());
                         }
                     }
                     works.Next();
@@ -161,6 +161,12 @@ namespace MLS.MusicDatabase.MusicBrainz
                     form.UpdateSRListBox(songs[id]);
                 }
             }
+            form.CheckConflicts();
+        }
+
+        public static void ClearResults()
+        {
+            results.Clear();
         }
 
         public static void selectMBID(string songId, string MBID)
