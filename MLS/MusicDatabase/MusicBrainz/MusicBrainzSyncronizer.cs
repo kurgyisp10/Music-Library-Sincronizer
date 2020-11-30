@@ -22,7 +22,6 @@ namespace MLS.MusicDatabase.MusicBrainz
     {
         private static Query query = new Query("Music Library Syncronizer", "1.0", "mailto:kurgyis.p@gmail.com");
         public static Dictionary<string, List<string>> results;
-
         private Uri redirect = new Uri("https://localhost:5000/callback/");
         string clientSecret = "swGRYqGEo1xLYOpjl-zP5ZuuBlrGRu4M";
         string clientId = "BpXLc9ZEEBiIK7bY-f8wjgoDwcXeYwiI";
@@ -30,9 +29,8 @@ namespace MLS.MusicDatabase.MusicBrainz
         private string authorizationToken;
         static HttpListener _httpListener = new HttpListener();
         private static readonly HttpClient client = new HttpClient();
-	private string accessToken;
+	    private string accessToken;
         public static Form1 form;
-
 
         public void testMethod()
         {
@@ -109,36 +107,52 @@ namespace MLS.MusicDatabase.MusicBrainz
         }
 
 
+        public static async Task<List<string>> findMusic(SongInfo song, IProgress<int> progress)
+        {
+            query.UrlScheme = "http";
+            List<string> foundSongs = new List<string>();
+            var artists = await query.FindArtistsAsync(song.artistName, simple: true).ConfigureAwait(false);
+            foreach (var artist in artists.Results)
+            {
+                if (!artist.Item.Name.Equals(song.artistName, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+                int browseLimit = 100;
+                var works = await query.BrowseArtistRecordingsAsync(artist.Item.Id, limit: browseLimit).ConfigureAwait(false);
+                for (int i = 0; i <= works.TotalResults; i += browseLimit)
+                {
+                    foreach (var work in works.Results)
+                    {
+                        if (work.Title.Equals(song.songName))
+                        {
+                            foundSongs.Add(work.Id.ToString());
+                            Console.WriteLine("Artist: " + artist.Item.Name + ", Song: " + work.Title + ", MBID: " + work.Id.ToString());
+                        }
+                    }
+                    works.Next();
+                }
+            }
+            progress.Report(1);
+            return foundSongs;
+        }
+
+        //TODO: Create Collection
+        //TODO: Add music to collection
+
+        public static List<string> GetSearchResults(string id)
+        {
+            return results[id];
+        }
+
         public static async void findSongs(object sender, EventArgs e)
         {
             Dictionary<string, SongInfo> songs = (sender as IMusicPlayerData).GetSyncSongs();
             results = new Dictionary<string, List<string>>();
+            var progress = form.SetupProgressBar(songs.Count);
             foreach (string songId in songs.Keys)
             {
-                List<string> foundSongs = new List<string>();
-                SongInfo song = songs[songId];
-                var artists = query.FindArtists(song.artistName, simple: true);
-                foreach (var artist in artists.Results)
-                {
-                    if (!artist.Item.Name.Equals(song.artistName))
-                    {
-                        continue;
-                    }
-                    int browseLimit = 100;
-                    var works = await query.BrowseArtistWorksAsync(artist.Item.Id, limit: browseLimit);
-                    for (int i = 0; i <= works.TotalResults; i += browseLimit)
-                    {
-                        foreach (var work in works.Results)
-                        {
-                            if (work.Title.Equals(song.songName))
-                            {
-                                foundSongs.Add(work.Id.ToString());
-                                Console.WriteLine("Artist: " + artist.Item.Name + ", Song: " + work.Title + ", MBID: " + work.Id.ToString());
-                            }
-                        }
-                        works.Next();
-                    }
-                }
+                List<string> foundSongs = await findMusic(songs[songId], progress);
                 results.Add(songId, foundSongs);
             }
             foreach (var id in results.Keys)
@@ -149,8 +163,11 @@ namespace MLS.MusicDatabase.MusicBrainz
                 }
             }
         }
-        
-        //TODO: Create Collection
-        //TODO: Add music to collection
+
+        public static void selectMBID(string songId, string MBID)
+        {
+            results[songId].Clear();
+            results[songId].Add(MBID);
+        }
     }
 }
