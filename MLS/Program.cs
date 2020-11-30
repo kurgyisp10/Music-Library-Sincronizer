@@ -17,8 +17,10 @@ namespace MLS
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
-            /*MusicDatabase.MusicBrainz.MusicBrainzSyncronizer MBS = new MusicDatabase.MusicBrainz.MusicBrainzSyncronizer();
-            MBS.authorize();*/
+            /*Console.WriteLine(DateTime.Now.ToString());
+            MusicDatabase.MusicBrainz.MusicBrainzSyncronizer MBS = new MusicDatabase.MusicBrainz.MusicBrainzSyncronizer();
+            MBS.getUserCollections("kurgyis.p");
+            Console.WriteLine(DateTime.Now.ToString());*/
         }
     }
 }

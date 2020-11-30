@@ -18,10 +18,17 @@ namespace MLS.MusicDatabase.MusicBrainz
         public string DisplayName { get; set; }
         public string Uri { get; set; }
     }
+    public struct CollectionInfo
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public List<Guid> elements { get; set; }
+    }
     class MusicBrainzSyncronizer
     {
         private static Query query = new Query("Music Library Syncronizer", "1.0", "mailto:kurgyis.p@gmail.com");
         public static Dictionary<string, List<string>> results;
+        private static Dictionary<string, SongInfo> songsToSync;
         private Uri redirect = new Uri("https://localhost:5000/callback/");
         string clientSecret = "swGRYqGEo1xLYOpjl-zP5ZuuBlrGRu4M";
         string clientId = "BpXLc9ZEEBiIK7bY-f8wjgoDwcXeYwiI";
@@ -31,6 +38,7 @@ namespace MLS.MusicDatabase.MusicBrainz
         private static readonly HttpClient client = new HttpClient();
 	    private string accessToken;
         public static Form1 form;
+        public static string userName;
 
         public void testMethod()
         {
@@ -106,7 +114,6 @@ namespace MLS.MusicDatabase.MusicBrainz
             Console.WriteLine(responseString);*/
         }
 
-
         public static async Task<List<string>> findMusic(SongInfo song, IProgress<int> progress)
         {
             query.UrlScheme = "http";
@@ -137,9 +144,6 @@ namespace MLS.MusicDatabase.MusicBrainz
             return foundSongs;
         }
 
-        //TODO: Create Collection
-        //TODO: Add music to collection
-
         public static List<string> GetSearchResults(string id)
         {
             return results[id];
@@ -147,19 +151,19 @@ namespace MLS.MusicDatabase.MusicBrainz
 
         public static async void findSongs(object sender, EventArgs e)
         {
-            Dictionary<string, SongInfo> songs = (sender as IMusicPlayerData).GetSyncSongs();
+            songsToSync = (sender as IMusicPlayerData).GetSyncSongs();
             results = new Dictionary<string, List<string>>();
-            var progress = form.SetupProgressBar(songs.Count);
-            foreach (string songId in songs.Keys)
+            var progress = form.SetupProgressBar(songsToSync.Count);
+            foreach (string songId in songsToSync.Keys)
             {
-                List<string> foundSongs = await findMusic(songs[songId], progress);
+                List<string> foundSongs = await findMusic(songsToSync[songId], progress);
                 results.Add(songId, foundSongs);
             }
             foreach (var id in results.Keys)
             {
                 if (results[id].Count >= 2)
                 {
-                    form.UpdateSRListBox(songs[id]);
+                    form.UpdateSRListBox(songsToSync[id]);
                 }
             }
         }
@@ -168,6 +172,117 @@ namespace MLS.MusicDatabase.MusicBrainz
         {
             results[songId].Clear();
             results[songId].Add(MBID);
+        }
+    
+        private async Task<Dictionary<Guid, CollectionInfo>> getUserCollections(string user)
+        {
+            Dictionary<Guid, CollectionInfo> userCollections = new Dictionary<Guid, CollectionInfo>();
+            int browseLimit = 50;
+            var collections = await query.BrowseEditorCollectionsAsync(user, limit: browseLimit).ConfigureAwait(false);
+            //var collections = query.BrowseEditorCollections(user, limit: browseLimit);
+            for (int i = 0; i <= collections.TotalResults; i += browseLimit)
+            {
+                foreach (var collection in collections.Results)
+                {
+                    if(collection.Type != EntityType.Recording.ToString())
+                    {
+                        continue;
+                    }
+                    CollectionInfo collectionInfo = new CollectionInfo();
+                    collectionInfo.Id = collection.Id;
+                    collectionInfo.Name = collection.Name;
+                    collectionInfo.elements = new List<Guid>();
+                    var recordings = await query.BrowseCollectionRecordingsAsync(collection.Id, limit: browseLimit).ConfigureAwait(false);
+                    //var recordings = query.BrowseCollectionRecordings(collection.Id, limit: browseLimit);
+                    for (int j = 0; j <= recordings.TotalResults; j += browseLimit)
+                    {
+                        foreach (var recording in recordings.Results)
+                        {
+                            collectionInfo.elements.Add(recording.Id);
+                            Console.WriteLine("Recording " + recording.Title + " (" + recording.Id + ") is in collection " + collection.Name + " (" + collection.Id + ").");
+                        }
+                        recordings.Next();
+                    }
+                    userCollections[collection.Id] = collectionInfo;
+                }
+                collections.Next();
+            }
+            return userCollections;
+        }
+
+        public async void syncronizeCollections()
+        {
+            Dictionary<Guid, CollectionInfo> collections = await getUserCollections(userName).ConfigureAwait(false);
+            //Remove unnecessary songs from collection
+            foreach(CollectionInfo collection in collections.Values)
+            {
+                bool collectionNeeded = false;
+                foreach(SongInfo songInfo in songsToSync.Values)
+                {
+                    if (songInfo.playlists.Contains(collection.Name))
+                    {
+                        collectionNeeded = true;
+                    }
+                }
+                if (collectionNeeded)
+                {
+                    foreach(Guid song in collection.elements)
+                    {
+                        bool songNeedsRemove = true;
+                        string songMBIDInCollection = song.ToString();
+                        foreach(string resultId in results.Keys)
+                        {
+                            if(results[resultId].Count >= 2)
+                            {
+                                //ERROR
+                            }
+                            else
+                            {
+                                string songMBIDFromSync = results[resultId][0];
+                                if (songMBIDInCollection.Equals(songMBIDFromSync) && songsToSync[resultId].playlists.Contains(collection.Name))
+                                {
+                                    songNeedsRemove = false;
+                                }
+                            }
+                        }
+                        //Remove song from collection
+                        //query.RemoveFromCollection(userName, collection.Id, EntityType.Recording, song);
+                        Console.WriteLine("Song with MBID " + song.ToString() + " was removed from " + collection.Name + " (" + collection.Id + ")") ;
+                    }
+                }
+            }
+            
+            //Add needed songs to collection
+            foreach (string songId in results.Keys)
+            {
+                if (results[songId].Count >= 2)
+                {
+                    //ERROR
+                }
+                SongInfo songInfo = songsToSync[songId];
+                Guid songMBID = new Guid(results[songId][0]);
+                foreach(string playlist in songInfo.playlists)
+                {
+                    foreach(CollectionInfo collection in collections.Values)
+                    {
+                        if (playlist.Equals(collection.Name))
+                        {
+                            if (!collection.elements.Contains(songMBID))
+                            {
+                                //Add song to collection
+                                //string result = await query.AddToCollectionAsync(userName, collection.Id, EntityType.Recording, new Guid(songMBID)).ConfigureAwait(false);
+                                //Console.WriteLine(result);
+                                Console.WriteLine(songInfo.songName + " from " + songInfo.artistName + " syncronized to " + collection.Name + " (" + collection.Id + ")");
+                            }
+                            else
+                            {
+                                //Song already in collection
+                                Console.WriteLine(songInfo.songName + " from " + songInfo.artistName + " was already in " + collection.Name + " (" + collection.Id + ")");
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
