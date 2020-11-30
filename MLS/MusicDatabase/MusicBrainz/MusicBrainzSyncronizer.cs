@@ -22,6 +22,7 @@ namespace MLS.MusicDatabase.MusicBrainz
     {
         private static Query query = new Query("Music Library Syncronizer", "1.0", "mailto:kurgyis.p@gmail.com");
         public static Dictionary<string, List<string>> results;
+
         private Uri redirect = new Uri("https://localhost:5000/callback/");
         string clientSecret = "swGRYqGEo1xLYOpjl-zP5ZuuBlrGRu4M";
         string clientId = "BpXLc9ZEEBiIK7bY-f8wjgoDwcXeYwiI";
@@ -29,6 +30,9 @@ namespace MLS.MusicDatabase.MusicBrainz
         private string authorizationToken;
         static HttpListener _httpListener = new HttpListener();
         private static readonly HttpClient client = new HttpClient();
+	private string accessToken;
+        public static Form1 form;
+
 
         public void testMethod()
         {
@@ -136,6 +140,13 @@ namespace MLS.MusicDatabase.MusicBrainz
                     }
                 }
                 results.Add(songId, foundSongs);
+            }
+            foreach (var id in results.Keys)
+            {
+                if (results[id].Count >= 2)
+                {
+                    form.UpdateSRListBox(songs[id]);
+                }
             }
         }
         

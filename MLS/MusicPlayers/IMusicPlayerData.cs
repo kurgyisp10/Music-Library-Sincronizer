@@ -12,15 +12,22 @@ namespace MLS
         public string albumName;
         public string artistName;
         public string releaseDate;
+        public string songId;
         public List<string> playlists;
 
-        public SongInfo(string songName, string albumName, string artistName, string releaseDate)
+        public SongInfo(string songName, string albumName, string artistName, string releaseDate, string songId)
         {
             this.songName = songName;
             this.albumName = albumName;
             this.artistName = artistName;
             this.releaseDate = releaseDate;
+            this.songId = songId;
             playlists = new List<string>();
+        }
+
+        public override string ToString()
+        {
+            return songName + " by " + artistName;
         }
     }
     public struct PlaylistInfo

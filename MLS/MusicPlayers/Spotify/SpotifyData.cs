@@ -174,7 +174,8 @@ namespace MLS
                             songs.Add(st.Track.Id, new SongInfo(st.Track.Name,
                                                                 st.Track.Album.Name,
                                                                 st.Track.Artists[0].Name,
-                                                                st.Track.Album.ReleaseDate));
+                                                                st.Track.Album.ReleaseDate,
+                                                                st.Track.Id));
                         }
                         songs[st.Track.Id].playlists.Add("Spotify Liked Songs");
                     }
@@ -192,7 +193,8 @@ namespace MLS
                                 songs.Add(t.Id, new SongInfo(t.Name,
                                                              t.Album.Name,
                                                              t.Artists[0].Name,
-                                                             t.Album.ReleaseDate));
+                                                             t.Album.ReleaseDate,
+                                                             t.Id));
                             }
                             songs[t.Id].playlists.Add("Spotify " + list.playlistName);
                         }
