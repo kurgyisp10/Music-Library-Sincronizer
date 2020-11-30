@@ -40,6 +40,9 @@ namespace MLS
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.conflictResolverListBox = new System.Windows.Forms.ListBox();
             this.createListBt = new System.Windows.Forms.Button();
+            this.backToSearchConflictsBt = new System.Windows.Forms.Button();
+            this.selectMBIDBt = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // musicPlayerListBox
@@ -161,6 +164,7 @@ namespace MLS
             this.songConflictsListBox.Name = "songConflictsListBox";
             this.songConflictsListBox.Size = new System.Drawing.Size(412, 320);
             this.songConflictsListBox.TabIndex = 7;
+            this.songConflictsListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.songConflictsListBox_MouseDoubleClick);
             // 
             // progressBar1
             // 
@@ -199,23 +203,68 @@ namespace MLS
             this.createListBt.Text = "Create Lists";
             this.createListBt.UseVisualStyleBackColor = false;
             // 
+            // backToSearchConflictsBt
+            // 
+            this.backToSearchConflictsBt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.backToSearchConflictsBt.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.backToSearchConflictsBt.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.backToSearchConflictsBt.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.backToSearchConflictsBt.Location = new System.Drawing.Point(12, 386);
+            this.backToSearchConflictsBt.MaximumSize = new System.Drawing.Size(120, 50);
+            this.backToSearchConflictsBt.MinimumSize = new System.Drawing.Size(60, 25);
+            this.backToSearchConflictsBt.Name = "backToSearchConflictsBt";
+            this.backToSearchConflictsBt.Size = new System.Drawing.Size(80, 25);
+            this.backToSearchConflictsBt.TabIndex = 11;
+            this.backToSearchConflictsBt.Text = "Back";
+            this.backToSearchConflictsBt.UseVisualStyleBackColor = false;
+            this.backToSearchConflictsBt.Click += new System.EventHandler(this.backToSearchConflictsBt_Click);
+            // 
+            // selectMBIDBt
+            // 
+            this.selectMBIDBt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.selectMBIDBt.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.selectMBIDBt.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.selectMBIDBt.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.selectMBIDBt.Location = new System.Drawing.Point(344, 386);
+            this.selectMBIDBt.MaximumSize = new System.Drawing.Size(120, 50);
+            this.selectMBIDBt.MinimumSize = new System.Drawing.Size(60, 25);
+            this.selectMBIDBt.Name = "selectMBIDBt";
+            this.selectMBIDBt.Size = new System.Drawing.Size(80, 25);
+            this.selectMBIDBt.TabIndex = 12;
+            this.selectMBIDBt.Text = "Select";
+            this.selectMBIDBt.UseVisualStyleBackColor = false;
+            this.selectMBIDBt.Click += new System.EventHandler(this.selectMBIDBt_Click);
+            // 
+            // textBox1
+            // 
+            this.textBox1.BackColor = System.Drawing.Color.Black;
+            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBox1.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.textBox1.Location = new System.Drawing.Point(98, 386);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(240, 20);
+            this.textBox1.TabIndex = 13;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(18)))), ((int)(((byte)(18)))), ((int)(((byte)(18)))));
             this.ClientSize = new System.Drawing.Size(436, 423);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.selectMBIDBt);
+            this.Controls.Add(this.backToSearchConflictsBt);
             this.Controls.Add(this.createListBt);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.tipLabel);
-            this.Controls.Add(this.backToLoginBt);
-            this.Controls.Add(this.backToListsBt);
-            this.Controls.Add(this.conflictResolverListBox);
             this.Controls.Add(this.songConflictsListBox);
             this.Controls.Add(this.musicPlayerListBox);
             this.Controls.Add(this.playlistsListBox);
             this.Controls.Add(this.selectorButton);
             this.Controls.Add(this.syncButton);
+            this.Controls.Add(this.conflictResolverListBox);
+            this.Controls.Add(this.backToLoginBt);
+            this.Controls.Add(this.backToListsBt);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form1";
             this.Text = "Form1";
@@ -237,6 +286,9 @@ namespace MLS
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.ListBox conflictResolverListBox;
         private System.Windows.Forms.Button createListBt;
+        private System.Windows.Forms.Button backToSearchConflictsBt;
+        private System.Windows.Forms.Button selectMBIDBt;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 

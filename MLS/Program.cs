@@ -17,6 +17,8 @@ namespace MLS
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
+            /*MusicDatabase.MusicBrainz.MusicBrainzSyncronizer MBS = new MusicDatabase.MusicBrainz.MusicBrainzSyncronizer();
+            MBS.authorize();*/
         }
     }
 }

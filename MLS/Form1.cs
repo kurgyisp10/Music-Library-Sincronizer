@@ -88,11 +88,15 @@ namespace MLS
 
         public void HideConflict()
         {
+            backToSearchConflictsBt.Hide();
+            selectMBIDBt.Hide();
             conflictResolverListBox.Hide();
         }
 
         public void ShowConflict()
         {
+            backToSearchConflictsBt.Show();
+            selectMBIDBt.Show();
             conflictResolverListBox.Show();
         }
 
@@ -159,16 +163,20 @@ namespace MLS
             int index = songConflictsListBox.IndexFromPoint(e.Location);
             if (index != ListBox.NoMatches)
             {
-                ResolveConflict((songConflictsListBox.Items[index] as PlaylistInfo).playlistId);
+                ResolveConflict((songConflictsListBox.Items[index] as SongInfo).songId);
             }
         }
 
-        private void ResolveConflict(string playlistId)
+        private void ResolveConflict(string songId)
         {
             HideSearchResolve();
             ShowConflict();
             conflictResolverListBox.Items.Clear();
-
+            var MBIDList = MusicBrainzSyncronizer.GetSearchResults(songId);
+            foreach (var mbid in MBIDList)
+            {
+                conflictResolverListBox.Items.Add(mbid);
+            }
         }
 
         private void backToListsBt_Click(object sender, EventArgs e)
@@ -176,6 +184,30 @@ namespace MLS
             HideSearchResolve();
             syncButton.Enabled = true;
             ShowPlaylists();
+        }
+
+        private void backToSearchConflictsBt_Click(object sender, EventArgs e)
+        {
+            HideConflict();
+            ShowSearchResolve();
+        }
+
+        private void selectMBIDBt_Click(object sender, EventArgs e)
+        {
+            if (conflictResolverListBox.SelectedItem == null)
+            {
+                return;
+            }
+            MusicBrainzSyncronizer.selectMBID((songConflictsListBox.SelectedItem as SongInfo).songId,
+                conflictResolverListBox.SelectedItem.ToString());
+            RefreshSRListBox();
+            HideConflict();
+            ShowSearchResolve();
+        }
+
+        private void RefreshSRListBox()
+        {
+            songConflictsListBox.Items.Remove(songConflictsListBox.SelectedItem);
         }
     }
 }
