@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.IO;
 
 namespace MLS.MusicDatabase.MusicBrainz
 {
@@ -39,6 +41,8 @@ namespace MLS.MusicDatabase.MusicBrainz
 	    private string accessToken;
         public static Form1 form;
         public static string userName;
+        private static Dictionary<Guid, CollectionInfo> songsToRemoveFromCollection = new Dictionary<Guid, CollectionInfo>();
+        private static Dictionary<Guid, CollectionInfo> songsToAddToCollection = new Dictionary<Guid, CollectionInfo>();
 
         public void testMethod()
         {
@@ -46,7 +50,7 @@ namespace MLS.MusicDatabase.MusicBrainz
         }
 
         //TODO: Login/Authentication
-        public async void authorize()
+        public async Task authorize()
         {
             // Setting up the webserver for authorization token callback
             _httpListener.Prefixes.Add(redirect.OriginalString);
@@ -67,7 +71,7 @@ namespace MLS.MusicDatabase.MusicBrainz
             // Getting the authorization token from MusicBrainz
             var oa = new OAuth2();
             oa.ClientId = clientId;
-            var url = oa.CreateAuthorizationRequest(redirect, AuthorizationScope.Collection);
+            var url = oa.CreateAuthorizationRequest(redirect, AuthorizationScope.Collection | AuthorizationScope.Profile);
             System.Diagnostics.Process.Start(url.OriginalString);
             while (!authorizationTokenGranted)
             {
@@ -75,9 +79,9 @@ namespace MLS.MusicDatabase.MusicBrainz
             }
 
             // Getting access token using BearerToken (Sync)
-            var at = oa.GetBearerToken(authorizationToken, clientSecret, redirect);
+            /*var at = oa.GetBearerToken(authorizationToken, clientSecret, redirect);
             query.BearerToken = at.AccessToken;
-            Console.WriteLine("Access token: " + at.AccessToken);
+            Console.WriteLine("Access token: " + at.AccessToken);*/
 
             // Getting access token using BearerToken (Async)
             /*var at = await oa.GetBearerTokenAsync(authorizationToken, clientSecret, redirect);
@@ -85,16 +89,21 @@ namespace MLS.MusicDatabase.MusicBrainz
             Console.WriteLine("Access token: " + at.AccessToken);*/
 
             // Alternative solution 1 sending direct POST request
-            /*using (var wb = new WebClient())
+            /*using (var wc = new WebClient())
             {
-                wb.Encoding = Encoding.ASCII;
+                wc.QueryString.Add("grant_type", "authorization_code");
+                wc.QueryString.Add("code", authorizationToken);
+                wc.QueryString.Add("clien_id", clientId);
+                wc.QueryString.Add("client_secret", clientSecret);
+                wc.QueryString.Add("redirect_uri", redirect.OriginalString);
                 var data = new System.Collections.Specialized.NameValueCollection();
                 data["grant_type"] = "authorization_code";
                 data["code"] = authorizationToken;
                 data["clien_id"] = clientId;
                 data["client_secret"] = clientSecret;
-                data["redirect_uri"] = redirect.OriginalString;
-                var response = wb.UploadValues("https://www.musicbrainz.org/oauth2/token", "POST", data);
+                string red_uri = "https%3A%2F%2Flocalhost%3A5000%2Fcallback%2F";
+                data["redirect_uri"] = red_uri;
+                var response = wc.UploadValues("http://www.musicbrainz.org/oauth2/token", "POST", wc.QueryString);
                 string responseInString = Encoding.UTF8.GetString(response);
                 Console.WriteLine(responseInString);
             }*/
@@ -112,6 +121,59 @@ namespace MLS.MusicDatabase.MusicBrainz
             var response = await client.PostAsync("http://www.musicbrainz.org/oauth2/token", content);
             var responseString = await response.Result.Content.ReadAsStringAsync();
             Console.WriteLine(responseString);*/
+
+            // Alternative solution 3 sending direct POST request
+            Console.WriteLine("Sajt");
+            var handler = new HttpClientHandler()
+            {
+                AllowAutoRedirect = false
+            };
+            using (HttpClient _httpClient = new HttpClient(handler))
+            {
+                string _urlString = "https://www.musicbrainz.org/oauth2/token?grant_type=authorization_code&code=" + authorizationToken + "&client_id=" + clientId + "&client_secret=" + clientSecret + "&redirect_uri=https%3A%2F%2Flocalhost%3A5000%2Fcallback%2F";
+                Uri _url = new Uri(_urlString);
+                string _parametersJson = "{'grant_type':'authorization_code'," +
+                                          "'code':'" + authorizationToken + "'," +
+                                          "'clien_id':'" + clientId + "'," +
+                                          "'client_secret':'" + clientSecret + "'," +
+                                          "'redirect_uri':'" + redirect.OriginalString + "'}";
+                HttpContent content = new StringContent(_parametersJson, Encoding.UTF8, "application/json");
+                var values = new Dictionary<string, string>
+                {
+                    { "grant_type",  "authorization_code" },
+                    { "code", authorizationToken },
+                    { "clien_id", clientId },
+                    { "client_secret", clientSecret },
+                    { "redirect_uri", redirect.OriginalString }
+                };
+                HttpContent content2 = new FormUrlEncodedContent(values);
+                HttpRequestMessage request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = _url,
+                    Content = content2
+                };
+                HttpResponseMessage result = await client.SendAsync(request);
+                if (result.IsSuccessStatusCode)
+                {
+                    Console.WriteLine(result.StatusCode.ToString());
+                    string resultString = result.Content.ReadAsStringAsync().Result;
+                    Console.WriteLine(resultString);
+                }
+                else
+                {
+                    Console.WriteLine(result.StatusCode.ToString());
+                    string resultString = result.Content.ReadAsStringAsync().Result;
+                    Console.WriteLine(resultString);
+                }
+                /*var response = await _httpClient.PostAsync(_url, new StringContent(_parametersJson, Encoding.UTF8, "application/json"));
+                Console.WriteLine(response.StatusCode.ToString());
+                response.EnsureSuccessStatusCode();
+                Console.WriteLine("Sajt");
+                string content = response.Content.ReadAsStringAsync().Result;
+                Console.WriteLine(content);*/
+            }
+            
         }
 
         public static async Task<List<string>> findMusic(SongInfo song, IProgress<int> progress)
@@ -235,7 +297,11 @@ namespace MLS.MusicDatabase.MusicBrainz
                 }
                 if (collectionNeeded)
                 {
-                    foreach(Guid song in collection.elements)
+                    CollectionInfo collectionInfo = new CollectionInfo();
+                    collectionInfo.Id = collection.Id;
+                    collectionInfo.Name = collection.Name;
+                    collectionInfo.elements = new List<Guid>();
+                    foreach (Guid song in collection.elements)
                     {
                         bool songNeedsRemove = true;
                         string songMBIDInCollection = song.ToString();
@@ -256,7 +322,12 @@ namespace MLS.MusicDatabase.MusicBrainz
                         }
                         //Remove song from collection
                         //query.RemoveFromCollection(userName, collection.Id, EntityType.Recording, song);
+                        collectionInfo.elements.Add(song);
                         Console.WriteLine("Song with MBID " + song.ToString() + " was removed from " + collection.Name + " (" + collection.Id + ")") ;
+                    }
+                    if(collectionInfo.elements.Count >= 1)
+                    {
+                        songsToRemoveFromCollection[collection.Id] = collectionInfo;
                     }
                 }
             }
@@ -283,6 +354,19 @@ namespace MLS.MusicDatabase.MusicBrainz
                                 //string result = await query.AddToCollectionAsync(userName, collection.Id, EntityType.Recording, new Guid(songMBID)).ConfigureAwait(false);
                                 //Console.WriteLine(result);
                                 Console.WriteLine(songInfo.songName + " from " + songInfo.artistName + " syncronized to " + collection.Name + " (" + collection.Id + ")");
+                                if (songsToAddToCollection.ContainsKey(collection.Id))
+                                {
+                                    songsToAddToCollection[collection.Id].elements.Add(songMBID);
+                                }
+                                else
+                                {
+                                    CollectionInfo collectionInfo = new CollectionInfo();
+                                    collectionInfo.Id = collection.Id;
+                                    collectionInfo.Name = collection.Name;
+                                    collectionInfo.elements = new List<Guid>();
+                                    collectionInfo.elements.Add(songMBID);
+                                    songsToAddToCollection[collection.Id] = collectionInfo;
+                                }
                             }
                             else
                             {
@@ -293,6 +377,16 @@ namespace MLS.MusicDatabase.MusicBrainz
                     }
                 }
             }
+
+            writeToJSON();
+        }
+
+        private static void writeToJSON()
+        {
+            string removesJSON = JsonSerializer.Serialize(songsToRemoveFromCollection.Values);
+            string addsJSON = JsonSerializer.Serialize(songsToAddToCollection.Values);
+            File.WriteAllText("songs_to_remove.json", removesJSON);
+            File.WriteAllText("songs_to_add.json", addsJSON);
         }
     }
 }
