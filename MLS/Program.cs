@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,14 @@ namespace MLS
         [STAThread]
         static async Task Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.Console()
+                .WriteTo.File("Log/log.txt",
+                              rollingInterval: RollingInterval.Day,
+                              rollOnFileSizeLimit: true)
+                .CreateLogger();
+            Log.Information("Begin Log");
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

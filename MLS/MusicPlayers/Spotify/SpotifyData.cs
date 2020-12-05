@@ -1,4 +1,5 @@
-﻿using SpotifyAPI.Web;
+﻿using Serilog;
+using SpotifyAPI.Web;
 using SpotifyAPI.Web.Auth;
 using System;
 using System.Collections.Generic;
@@ -72,6 +73,7 @@ namespace MLS
                 if (pl.Tracks.Total.GetValueOrDefault() > 0)
                 {
                     playlistsInfo.Add(new PlaylistInfo(pl.Id, pl.Name));
+                    Log.Information("Playlist: {@PlaylistInfo}", playlistsInfo[playlistsInfo.Count-1]);
                 }
             }
 
@@ -104,11 +106,13 @@ namespace MLS
             {
                 Console.WriteLine("Login Successful!");
                 OnLoginResult(true);
+                
             }
             else
             {
                 Console.WriteLine(loginError);
                 OnLoginResult(false);
+                Log.Information("Login Spotify Failed");
             }
             return "";
         }
@@ -137,6 +141,7 @@ namespace MLS
                 account.DisplayName = user.DisplayName;
                 account.Uri = user.Uri;
 
+                Log.Information("Login Spotify Succesful as " + user.DisplayName);
                 server.Dispose();
                 tcs.SetResult("");
             };
@@ -164,7 +169,7 @@ namespace MLS
             songs = new Dictionary<string, SongInfo>();
             foreach(PlaylistInfo list in selectedItems)
             {
-                if (list.playlistId.Equals("0"))
+                if (list.PlaylistId.Equals("0"))
                 {
                     var savedTracks = await spotify.PaginateAll(await spotify.Library.GetTracks());
                     foreach(SavedTrack st in savedTracks)
@@ -177,12 +182,12 @@ namespace MLS
                                                                 st.Track.Album.ReleaseDate,
                                                                 st.Track.Id));
                         }
-                        songs[st.Track.Id].playlists.Add("Spotify Liked Songs");
+                        songs[st.Track.Id].Playlists.Add("Spotify Liked Songs");
                     }
                 }
                 else
                 {
-                    var playlistTracks = await spotify.PaginateAll(await spotify.Playlists.GetItems(list.playlistId));
+                    var playlistTracks = await spotify.PaginateAll(await spotify.Playlists.GetItems(list.PlaylistId));
                     foreach (var pt in playlistTracks)
                     {
                         if (pt.Track.Type == ItemType.Track)
@@ -196,7 +201,7 @@ namespace MLS
                                                              t.Album.ReleaseDate,
                                                              t.Id));
                             }
-                            songs[t.Id].playlists.Add("Spotify " + list.playlistName);
+                            songs[t.Id].Playlists.Add("Spotify " + list.PlaylistName);
                         }
                         else
                         {
@@ -205,7 +210,10 @@ namespace MLS
                     }
                 }
             }
-
+            foreach (var item in songs.Values)
+            {
+                Log.Information("Song to sync: {@Song}", item);
+            }
             OnSyncSongResult();
         }
 

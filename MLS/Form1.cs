@@ -1,6 +1,9 @@
 ﻿using MLS.MusicDatabase.MusicBrainz;
+using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
 
 namespace MLS
@@ -9,6 +12,8 @@ namespace MLS
     {
         public Form1()
         {
+            KeyPreview = true;
+            KeyDown += new KeyEventHandler(Form_KeyDown);
             InitializeComponent();
             HidePlaylists();
             HideSearchResolve();
@@ -166,7 +171,7 @@ namespace MLS
             int index = songConflictsListBox.IndexFromPoint(e.Location);
             if (index != ListBox.NoMatches)
             {
-                ResolveConflict((songConflictsListBox.Items[index] as SongInfo).songId);
+                ResolveConflict((songConflictsListBox.Items[index] as SongInfo).SongId);
             }
         }
 
@@ -205,7 +210,7 @@ namespace MLS
                 tipLabel.Text = "Select which version you want to save.";
                 return;
             }
-            MusicBrainzSyncronizer.selectMBID((songConflictsListBox.SelectedItem as SongInfo).songId,
+            MusicBrainzSyncronizer.selectMBID((songConflictsListBox.SelectedItem as SongInfo).SongId,
                 conflictResolverListBox.SelectedItem.ToString());
             RefreshSRListBox();
             HideConflict();
@@ -257,6 +262,15 @@ namespace MLS
         private void exitBt_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        void Form_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.L)       // Ctrl-S Save
+            {
+                Process.Start("explorer.exe", Directory.GetCurrentDirectory() + "\\Log");
+                e.SuppressKeyPress = true;  // Stops other controls on the form receiving event.
+            }
         }
     }
 }

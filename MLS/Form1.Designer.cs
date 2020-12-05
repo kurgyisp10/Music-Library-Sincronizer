@@ -286,7 +286,7 @@ namespace MLS
             this.Controls.Add(this.selectMBIDBt);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Music Library Synchronizer";
             this.ResumeLayout(false);
             this.PerformLayout();
 

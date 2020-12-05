@@ -8,42 +8,52 @@ namespace MLS
 {
     public class SongInfo
     {
-        public string songName;
-        public string albumName;
-        public string artistName;
-        public string releaseDate;
-        public string songId;
-        public List<string> playlists;
+        private string songName;
+        private string albumName;
+        private string artistName;
+        private string releaseDate;
+        private string songId;
+        private List<string> playlists;
+
+        public string SongName { get => songName; set => songName = value; }
+        public string AlbumName { get => albumName; set => albumName = value; }
+        public string ArtistName { get => artistName; set => artistName = value; }
+        public string ReleaseDate { get => releaseDate; set => releaseDate = value; }
+        public string SongId { get => songId; set => songId = value; }
+        public List<string> Playlists { get => playlists; set => playlists = value; }
 
         public SongInfo(string songName, string albumName, string artistName, string releaseDate, string songId)
         {
-            this.songName = songName;
-            this.albumName = albumName;
-            this.artistName = artistName;
-            this.releaseDate = releaseDate;
-            this.songId = songId;
-            playlists = new List<string>();
+            this.SongName = songName;
+            this.AlbumName = albumName;
+            this.ArtistName = artistName;
+            this.ReleaseDate = releaseDate;
+            this.SongId = songId;
+            Playlists = new List<string>();
         }
 
         public override string ToString()
         {
-            return songName + " by " + artistName;
+            return SongName + " by " + ArtistName;
         }
     }
     public class PlaylistInfo
     {
-        public string playlistId;
-        public string playlistName;
+        private string playlistId;
+        private string playlistName;
+
+        public string PlaylistId { get => playlistId; set => playlistId = value; }
+        public string PlaylistName { get => playlistName; set => playlistName = value; }
 
         public PlaylistInfo(string playlistId, string playlistName)
         {
-            this.playlistId = playlistId;
-            this.playlistName = playlistName;
+            this.PlaylistId = playlistId;
+            this.PlaylistName = playlistName;
         }
 
         public override string ToString()
         {
-            return playlistName;
+            return PlaylistName;
         }
     }
 

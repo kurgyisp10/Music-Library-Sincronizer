@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Text.Json;
 using System.IO;
+using Serilog;
 
 namespace MLS.MusicDatabase.MusicBrainz
 {
@@ -180,20 +181,20 @@ namespace MLS.MusicDatabase.MusicBrainz
         {
             query.UrlScheme = "http";
             List<string> foundSongs = new List<string>();
-            var artists = await query.FindArtistsAsync(song.artistName, simple: true).ConfigureAwait(false);
+            var artists = await query.FindArtistsAsync(song.ArtistName, simple: true).ConfigureAwait(false);
             foreach (var artist in artists.Results)
             {
-                if (!artist.Item.Name.Equals(song.artistName, StringComparison.OrdinalIgnoreCase))
+                if (!artist.Item.Name.Equals(song.ArtistName, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
                 int browseLimit = 100;
-                var works = await query.FindRecordingsAsync("arid:" + artist.Item.Id.ToString() + " AND \"" + song.songName + "\"", browseLimit);//query.BrowseArtistRecordingsAsync(artist.Item.Id, limit: browseLimit).ConfigureAwait(false);
+                var works = await query.FindRecordingsAsync("arid:" + artist.Item.Id.ToString() + " AND \"" + song.SongName + "\"", browseLimit);//query.BrowseArtistRecordingsAsync(artist.Item.Id, limit: browseLimit).ConfigureAwait(false);
                 for (int i = 0; i <= works.TotalResults; i += browseLimit)
                 {
                     foreach (var work in works.Results)
                     {
-                        if (work.Item.Title.Equals(song.songName))
+                        if (work.Item.Title.Equals(song.SongName))
                         {
                             foundSongs.Add(work.Item.Id.ToString());
                             Console.WriteLine("Artist: " + artist.Item.Name + ", Song: " + work.Item.Title + ", MBID: " + work.Item.Id.ToString());
@@ -222,6 +223,11 @@ namespace MLS.MusicDatabase.MusicBrainz
                 if (foundSongs.Count > 0)
                 {
                     results.Add(songId, foundSongs);
+                    Log.Information("Match(es) found: {@Match}, for {Id}", results[songId], songId);
+                }
+                else
+                {
+                    Log.Information("No match found for: {@Song}", songId);
                 }
             }
             foreach (var id in results.Keys)
@@ -243,6 +249,7 @@ namespace MLS.MusicDatabase.MusicBrainz
         {
             results[songId].Clear();
             results[songId].Add(MBID);
+            Log.Information("{@MBID} selected for: {@Song}", MBID, songId);
         }
     
         private static async Task<Dictionary<Guid, CollectionInfo>> getUserCollections(string user)
@@ -290,7 +297,7 @@ namespace MLS.MusicDatabase.MusicBrainz
                 bool collectionNeeded = false;
                 foreach(SongInfo songInfo in songsToSync.Values)
                 {
-                    if (songInfo.playlists.Contains(collection.Name))
+                    if (songInfo.Playlists.Contains(collection.Name))
                     {
                         collectionNeeded = true;
                     }
@@ -309,12 +316,13 @@ namespace MLS.MusicDatabase.MusicBrainz
                         {
                             if(results[resultId].Count >= 2)
                             {
+                                Log.Information("Skipped selection for {@ResultId}", resultId);
                                 //ERROR
                             }
                             else
                             {
                                 string songMBIDFromSync = results[resultId][0];
-                                if (songMBIDInCollection.Equals(songMBIDFromSync) && songsToSync[resultId].playlists.Contains(collection.Name))
+                                if (songMBIDInCollection.Equals(songMBIDFromSync) && songsToSync[resultId].Playlists.Contains(collection.Name))
                                 {
                                     songNeedsRemove = false;
                                 }
@@ -342,7 +350,7 @@ namespace MLS.MusicDatabase.MusicBrainz
                 }
                 SongInfo songInfo = songsToSync[songId];
                 Guid songMBID = new Guid(results[songId][0]);
-                foreach(string playlist in songInfo.playlists)
+                foreach(string playlist in songInfo.Playlists)
                 {
                     foreach(CollectionInfo collection in collections.Values)
                     {
@@ -353,7 +361,7 @@ namespace MLS.MusicDatabase.MusicBrainz
                                 //Add song to collection
                                 //string result = await query.AddToCollectionAsync(userName, collection.Id, EntityType.Recording, new Guid(songMBID)).ConfigureAwait(false);
                                 //Console.WriteLine(result);
-                                Console.WriteLine(songInfo.songName + " from " + songInfo.artistName + " syncronized to " + collection.Name + " (" + collection.Id + ")");
+                                Console.WriteLine(songInfo.SongName + " from " + songInfo.ArtistName + " syncronized to " + collection.Name + " (" + collection.Id + ")");
                                 if (songsToAddToCollection.ContainsKey(collection.Id))
                                 {
                                     songsToAddToCollection[collection.Id].elements.Add(songMBID);
@@ -371,7 +379,7 @@ namespace MLS.MusicDatabase.MusicBrainz
                             else
                             {
                                 //Song already in collection
-                                Console.WriteLine(songInfo.songName + " from " + songInfo.artistName + " was already in " + collection.Name + " (" + collection.Id + ")");
+                                Console.WriteLine(songInfo.SongName + " from " + songInfo.ArtistName + " was already in " + collection.Name + " (" + collection.Id + ")");
                             }
                         }
                     }
